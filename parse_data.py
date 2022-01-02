@@ -26,23 +26,23 @@ def assign_year(month, cycle):
 
 def get_month_name(month):
     """Returns the name of the month."""
-    if month == "1":
+    if month == "1" or month == "01":
         return "January"
-    elif month == "2":
+    elif month == "2" or month == "02":
         return "February"
-    elif month == "3":
+    elif month == "3" or month == "03":
         return "March"
-    elif month == "4":
+    elif month == "4" or month == "04":
         return "April"
-    elif month == "5":
+    elif month == "5" or month == "05":
         return "May"
-    elif month == "6":
+    elif month == "6" or month == "06":
         return "June"
-    elif month == "7":
+    elif month == "7" or month == "07":
         return "July"
-    elif month == "8":
+    elif month == "8" or month == "08":
         return "August"
-    elif month == "9":
+    elif month == "9" or month == "09":
         return "September"
     elif month == "10":
         return "October"
