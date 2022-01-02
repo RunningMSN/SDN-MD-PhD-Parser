@@ -8,21 +8,22 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r, echo=FALSE, include=FALSE}
+# Load dependencies
 library(tidyverse)
 library(ggplot2)
 library(dplyr)
 data <- read.csv("../outputs/corrected_output.csv", na.strings = c(""))
 ```
 
-## Distribution of Interviews and Acceptances Throughout the Cycle
+## Distribution of SDN Interviews and Acceptances Throughout the Cycle
 This is a plot showing the distribution of interview invitations over the course of the cycle. Note that the 2022 cycle is incomplete, and some individuals might currently be underreported.
 ```{r, echo = FALSE}
-interviews <- data %>% filter(!is.na(interview_received_month), interview_received_month != "None") %>% 
+interviews <- data %>% filter(!is.na(interview_received_month)) %>% 
   group_by(cycle, interview_received_month) %>% 
   summarise(interview_count = length(interview_received_month))
 
-interviews <- interviews %>% group_by(cycle) %>% mutate(countT = sum(interview_count)) %>%
-  group_by(interview_received_month) %>% mutate(interviews_prop = round(100*interview_count/countT, 2))
+interviews <- interviews %>% group_by(cycle) %>% mutate(count_total_interviews = sum(interview_count)) %>%
+  group_by(interview_received_month) %>% mutate(interviews_prop = round(100*interview_count/count_total_interviews, 2))
 
 interviews$interview_received_month <- factor(interviews$interview_received_month)
 interviews$cycle <- factor(interviews$cycle)
@@ -37,7 +38,7 @@ interviews <- interviews %>% mutate(order = case_when(interview_received_month =
 
 
 interviews %>% ggplot(aes(x = reorder(interview_received_month, order), y = interviews_prop, color=cycle)) + 
-  geom_point() + geom_line(aes(group=cycle, color=cycle)) + xlab("Month") + ylab("Proportion of Total Interviews Received") + 
+  geom_point() + geom_line(aes(group=cycle, color=cycle)) + xlab("Month") + ylab("Percentage of Total Interviews Received") + 
   labs(title="Distribution of MD/PhD Interview Invites")
 ```
 
@@ -59,11 +60,44 @@ acceptances <- acceptances %>% group_by(cycle) %>% mutate(count_per_month = sum(
   group_by(accepted_month) %>% mutate(accepted_prop = round(100*accepted_count/count_per_month, 2))
 acceptances$cycle <- factor(acceptances$cycle)
 acceptances %>% ggplot(aes(x=reorder(accepted_month, order), y=accepted_prop, color=cycle)) + geom_point() +
-  geom_line(aes(group=cycle, color=cycle)) + xlab("Month") + ylab("Proportion of Acceptances") + 
+  geom_line(aes(group=cycle, color=cycle)) + xlab("Month") + ylab("Percentage of Acceptances") + 
   labs(title="Distribution of MD/PhD Acceptances")
 ```
 
-## Interviews and Acceptances
+## Distribution of AAMC MD/PhD Acceptances Over Cycle
+The below plot demonstrates MD/PhD acceptances over time using data from the AAMC as supplied by Fencer on SDN.
+```{r, echo = FALSE}
+# Read the data
+aamc_data <- read.csv("../data/aamc_data.csv", na.strings = c(""))
+
+# Obtain dates as date objects
+aamc_data <- aamc_data %>% mutate(cDate = as.Date(date, "%m/%d/%y")) %>% mutate(month_day = format(cDate, "%m-%d"))
+
+# Set dates on the same year for the purpose of plotting
+aamc_data <- aamc_data %>% mutate(plotting_year = case_when(grepl("09-", month_day) ~ 2021,
+                                          grepl("10-", month_day) ~ 2021,
+                                          grepl("11-", month_day) ~ 2021,
+                                          grepl("12-", month_day) ~ 2021,
+                                          grepl("01-", month_day) ~ 2022,
+                                          grepl("02-", month_day) ~ 2022,
+                                          grepl("03-", month_day) ~ 2022,
+                                          grepl("04-", month_day) ~ 2022,
+                                          grepl("05-", month_day) ~ 2022,
+                                          grepl("06-", month_day) ~ 2022))
+aamc_data <- aamc_data %>% mutate(plotting_date = as.Date(paste(plotting_year,"-",month_day,sep="")), "%y-%m-%d")
+aamc_data$cycle <- factor(aamc_data$cycle)
+
+# Remove single point at the end of 2019 cycle
+aamc_data <- aamc_data %>% filter(date != "10/3/19")
+
+# Plot
+aamc_data %>% ggplot(aes(x=plotting_date, y= accepted, color = cycle)) + geom_point() + 
+  labs(x="Date", y="Number of Applicants with Minimum 1 Acceptance", title="Distribution of MD/PhD Acceptances over Cycle") + 
+  scale_x_date(date_breaks = "1 month", date_labels = "%b")
+```
+
+
+## Interviews vs Acceptances
 
 Plotted number of interviews vs. number of acceptances. To account for a significant number of individuals who did not report their interviews and/or acceptances, this model only includes individuals who had at least 1 interview/acceptances, and greater or equal interviews to acceptances.
 
@@ -82,10 +116,10 @@ ggplot() + geom_point(data=d2019, aes(x=interviews, y=acceptances, color="red", 
   geom_smooth(data=total, aes(x=interviews, y=acceptances), method=lm, color="black") +
   xlim(c(0,20)) + ylim(c(0,11)) + xlab("Interviews") + ylab("Acceptances") +
   labs(title="SDN MD/PhD Interviews vs Acceptances 2019-2021 Cycles") +
-  guides(color=guide_legend("Cycles")) + scale_color_manual(labels = c("2019", "2020", "2021"), values = c("red", "blue", "green"))
+  guides(color=guide_legend("cycle")) + scale_color_manual(labels = c("2019", "2020", "2021"), values = c("red", "blue", "green"))
 ```
 
 Below is a linear model of the total interviews vs acceptances for all 3 cycles worth of data.
-```{r}
+```{r, echo=FALSE}
 summary(total %>% lm(acceptances ~ interviews, .))
 ```
