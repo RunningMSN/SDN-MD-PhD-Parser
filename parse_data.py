@@ -57,7 +57,7 @@ def get_month_name(month):
 # Parse Interview Data
 for cycle_file in listdir('data/interviews'):
     curr_cycle = get_cycle(cycle_file.strip(".txt"))
-    with open("interviews/" + cycle_file) as data:
+    with open("data/interviews/" + cycle_file) as data:
         for line in data:
             # School name
             school = line.split(": ", 1)[0]
@@ -92,7 +92,7 @@ for cycle_file in listdir('data/interviews'):
 # Parse Acceptance Data
 for cycle_file in listdir('data/acceptances'):
     curr_cycle = get_cycle(cycle_file.strip(".txt"))
-    with open("acceptances/" + cycle_file) as data:
+    with open("data/acceptances/" + cycle_file) as data:
         for line in data:
             # School name
             school = line.split(": ", 1)[0]
@@ -126,7 +126,7 @@ for cycle_file in listdir('data/acceptances'):
 # Parse Pre-Interview Rejection Data
 for cycle_file in listdir('data/pre_int_rejections'):
     curr_cycle = get_cycle(cycle_file.strip(".txt"))
-    with open("pre_int_rejections/" + cycle_file) as data:
+    with open("data/pre_int_rejections/" + cycle_file) as data:
         for line in data:
             # School name
             school = line.split(": ", 1)[0]
@@ -160,7 +160,7 @@ for cycle_file in listdir('data/pre_int_rejections'):
 # Parse Post-Interview Rejection Data
 for cycle_file in listdir('data/post_int_rejections'):
     curr_cycle = get_cycle(cycle_file.strip(".txt"))
-    with open("post_int_rejections/" + cycle_file) as data:
+    with open("data/post_int_rejections/" + cycle_file) as data:
         for line in data:
             # School name
             school = line.split(": ", 1)[0]
@@ -192,7 +192,7 @@ for cycle_file in listdir('data/post_int_rejections'):
                     cont_reading = False
 
 # Print out the raw output without any modification to data
-with open("raw_output.csv", "w") as file:
+with open("outputs/raw_output.csv", "w") as file:
     file.write("cycle,applicant,school,complete,pre-II rejection,interview received,interviewed on,accepted,post-II rejection\n")
     for cycle in cycles:
         for applicant in cycle.applicants:
@@ -218,7 +218,7 @@ with open("raw_output.csv", "w") as file:
                 file.write("\n")
 
 # Print out cured useful data
-with open("corrected_output.csv", "w") as file:
+with open("outputs/corrected_output.csv", "w") as file:
     file.write("cycle,applicant,school,complete_month,complete_date,pre-II_reject_month,pre-II_reject_date,interview_received_month,interview_received_date,interview_on_month,interview_on_date,accepted_month,accepted_date,post-II_reject_month,post-II_reject_date\n")
     for cycle in cycles:
         for applicant in cycle.applicants:
