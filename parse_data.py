@@ -55,7 +55,7 @@ def get_month_name(month):
 
 
 # Parse Interview Data
-for cycle_file in listdir('interviews'):
+for cycle_file in listdir('data/interviews'):
     curr_cycle = get_cycle(cycle_file.strip(".txt"))
     with open("interviews/" + cycle_file) as data:
         for line in data:
@@ -90,7 +90,7 @@ for cycle_file in listdir('interviews'):
                     cont_reading = False
 
 # Parse Acceptance Data
-for cycle_file in listdir('acceptances'):
+for cycle_file in listdir('data/acceptances'):
     curr_cycle = get_cycle(cycle_file.strip(".txt"))
     with open("acceptances/" + cycle_file) as data:
         for line in data:
@@ -124,7 +124,7 @@ for cycle_file in listdir('acceptances'):
                     cont_reading = False
 
 # Parse Pre-Interview Rejection Data
-for cycle_file in listdir('pre_int_rejections'):
+for cycle_file in listdir('data/pre_int_rejections'):
     curr_cycle = get_cycle(cycle_file.strip(".txt"))
     with open("pre_int_rejections/" + cycle_file) as data:
         for line in data:
@@ -158,7 +158,7 @@ for cycle_file in listdir('pre_int_rejections'):
                     cont_reading = False
 
 # Parse Post-Interview Rejection Data
-for cycle_file in listdir('post_int_rejections'):
+for cycle_file in listdir('data/post_int_rejections'):
     curr_cycle = get_cycle(cycle_file.strip(".txt"))
     with open("post_int_rejections/" + cycle_file) as data:
         for line in data:
