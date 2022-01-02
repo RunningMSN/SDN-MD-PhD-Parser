@@ -93,7 +93,7 @@ aamc_data <- aamc_data %>% filter(date != "10/3/19")
 # Plot
 aamc_data %>% ggplot(aes(x=plotting_date, y= accepted, color = cycle)) + geom_point() + 
   labs(x="Date", y="Number of Applicants with Minimum 1 Acceptance", title="Distribution of MD/PhD Acceptances over Cycle") + 
-  scale_x_date(date_breaks = "1 month", date_labels = "%b")
+  scale_x_date(date_breaks = "1 month", date_labels = "%b") + geom_smooth(method="loess", se=F, color="black")
 ```
 
 
