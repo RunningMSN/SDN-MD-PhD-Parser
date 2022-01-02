@@ -1,0 +1,91 @@
+---
+title: "SDN MD/PhD Cycle Analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=FALSE, include=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+data <- read.csv("../outputs/corrected_output.csv", na.strings = c(""))
+```
+
+## Distribution of Interviews and Acceptances Throughout the Cycle
+This is a plot showing the distribution of interview invitations over the course of the cycle. Note that the 2022 cycle is incomplete, and some individuals might currently be underreported.
+```{r, echo = FALSE}
+interviews <- data %>% filter(!is.na(interview_received_month), interview_received_month != "None") %>% 
+  group_by(cycle, interview_received_month) %>% 
+  summarise(interview_count = length(interview_received_month))
+
+interviews <- interviews %>% group_by(cycle) %>% mutate(countT = sum(interview_count)) %>%
+  group_by(interview_received_month) %>% mutate(interviews_prop = round(100*interview_count/countT, 2))
+
+interviews$interview_received_month <- factor(interviews$interview_received_month)
+interviews$cycle <- factor(interviews$cycle)
+interviews <- interviews %>% mutate(order = case_when(interview_received_month == "July" ~ 1,
+                                                      interview_received_month == "August" ~ 2,
+                                                      interview_received_month == "September" ~ 3,
+                                                      interview_received_month == "October" ~ 4,
+                                                      interview_received_month == "November" ~ 5,
+                                                      interview_received_month == "December" ~ 6,
+                                                      interview_received_month == "January" ~ 7,
+                                                      interview_received_month == "February" ~ 8))
+
+
+interviews %>% ggplot(aes(x = reorder(interview_received_month, order), y = interviews_prop, color=cycle)) + 
+  geom_point() + geom_line(aes(group=cycle, color=cycle)) + xlab("Month") + ylab("Proportion of Total Interviews Received") + 
+  labs(title="Distribution of MD/PhD Interview Invites")
+```
+
+This plot shows the distribution of reported acceptances over the course of the cycle. Data from the 2022 cycle is incomplete and not reported.
+```{r, echo=FALSE}
+acceptances <- data %>% filter(!is.na(accepted_month), cycle != "2022") %>% 
+  group_by(cycle, accepted_month) %>% 
+  summarise(accepted_count = length(accepted_month)) %>%
+  mutate(order = case_when(accepted_month == "October" ~ 1,
+                           accepted_month == "November" ~ 2,
+                           accepted_month == "December" ~ 3,
+                           accepted_month == "January" ~ 4,
+                           accepted_month == "February" ~ 5,
+                           accepted_month == "March" ~ 6,
+                           accepted_month == "April" ~ 7,
+                           accepted_month == "May" ~ 8,
+                           accepted_month == "June" ~ 9))
+acceptances <- acceptances %>% group_by(cycle) %>% mutate(count_per_month = sum(accepted_count)) %>%
+  group_by(accepted_month) %>% mutate(accepted_prop = round(100*accepted_count/count_per_month, 2))
+acceptances$cycle <- factor(acceptances$cycle)
+acceptances %>% ggplot(aes(x=reorder(accepted_month, order), y=accepted_prop, color=cycle)) + geom_point() +
+  geom_line(aes(group=cycle, color=cycle)) + xlab("Month") + ylab("Proportion of Acceptances") + 
+  labs(title="Distribution of MD/PhD Acceptances")
+```
+
+## Interviews and Acceptances
+
+Plotted number of interviews vs. number of acceptances. To account for a significant number of individuals who did not report their interviews and/or acceptances, this model only includes individuals who had at least 1 interview/acceptances, and greater or equal interviews to acceptances.
+
+```{r, echo=FALSE}
+d2019 <- data %>% filter(cycle == "2019") %>% group_by(applicant) %>% summarise(interviews = sum(!is.na(interview_received_month)), acceptances = sum(!is.na(accepted_month))) %>% filter(interviews > 0 & interviews >= acceptances & acceptances > 0)
+d2020 <- data %>% filter(cycle == "2020") %>% group_by(applicant) %>% summarise(interviews = sum(!is.na(interview_received_month)), acceptances = sum(!is.na(accepted_month))) %>% filter(interviews > 0 & interviews >= acceptances & acceptances > 0)
+d2021 <- data %>% filter(cycle == "2021") %>% group_by(applicant) %>% summarise(interviews = sum(!is.na(interview_received_month)), acceptances = sum(!is.na(accepted_month))) %>% filter(interviews > 0 & interviews >= acceptances & acceptances > 0)
+total <- data %>% filter(cycle != "2022") %>% group_by(applicant) %>% summarise(interviews = sum(!is.na(interview_received_month)), acceptances = sum(!is.na(accepted_month))) %>% filter(interviews > 0 & interviews >= acceptances & acceptances > 0)
+
+ggplot() + geom_point(data=d2019, aes(x=interviews, y=acceptances, color="red", alpha=I(0.6))) +
+  geom_smooth(data=d2019, aes(x=interviews, y=acceptances), method=lm, se=F,color = "red") +
+  geom_point(data=d2020, aes(x=interviews, y=acceptances, color="blue", alpha=I(0.6))) + 
+  geom_smooth(data=d2020, aes(x=interviews, y=acceptances), method=lm, se=F, color="blue") +
+  geom_point(data=d2021, aes(x=interviews, y=acceptances, color="green", alpha=I(0.6))) +
+  geom_smooth(data=d2021, aes(x=interviews, y=acceptances), method=lm, se=F, color="green") + 
+  geom_smooth(data=total, aes(x=interviews, y=acceptances), method=lm, color="black") +
+  xlim(c(0,20)) + ylim(c(0,11)) + xlab("Interviews") + ylab("Acceptances") +
+  labs(title="SDN MD/PhD Interviews vs Acceptances 2019-2021 Cycles") +
+  guides(color=guide_legend("Cycles")) + scale_color_manual(labels = c("2019", "2020", "2021"), values = c("red", "blue", "green"))
+```
+
+Below is a linear model of the total interviews vs acceptances for all 3 cycles worth of data.
+```{r}
+summary(total %>% lm(acceptances ~ interviews, .))
+```
