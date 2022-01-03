@@ -6,12 +6,27 @@ The latest version of this data is available on Google Drive [here](https://docs
 
 You can view some of my analysis of this data [here](https://runningmsn.github.io/).
 
+## Don't Trust this Data!
+While over-analyzing MD/PhD cycle data can be fun for us nerds, it's important to acknowledge that data from SDN is 
+biased and extremely limited. Here are a few reasons why SDN data is unreliable:
+
+1. SDN has a bias toward higher-achieving posters. Data may be biased toward earlier interviews/acceptances, and 
+greater volumes of interviews/acceptances than the typical student.
+2. There is a high variability in reporting between users. Some people may not report all of their results or may only 
+report some categories of results (e.g. interviews/rejections, but not acceptances, etc.).
+3. Some users may only report a fraction of the results within a single category.
+
+The following graph of interview vs. acceptance count from the 2019-2021 cycles is a good example of why this data 
+should not be taken at face value.
+
+![](analysis/problematic_example.png)
+
 ## Using This Tool
 I will likely stop updating the data for this tool after the 2022 cycle. 
 However, updating it for future cycles is extremely easy. For each new cycle, 
 add a .txt file with the cycle year into the acceptances, interviews, and rejections folders 
 that contains the data for that year. For the tool to work correctly, you will need to make sure 
-the data files are formatted correctly. The file formatting guidelines are shown in the following section. 
+the data files are formatted correctly. The file formatting guidelines are shown in a following section. 
 For the best output data, make sure to use the same school names between cycles. You can refer to my 
 existing data files for file formatting examples.
 
