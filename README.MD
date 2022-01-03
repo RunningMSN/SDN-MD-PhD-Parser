@@ -19,7 +19,7 @@ report some categories of results (e.g. interviews/rejections, but not acceptanc
 The following graph of interview vs. acceptance count from the 2019-2021 cycles is a good example of why this data 
 should not be taken at face value.
 
-![](analysis/problematic_example.png)
+![](analysis/problematic_example_interviews_acceptances.png)
 
 ## Using This Tool
 I will likely stop updating the data for this tool after the 2022 cycle. 
