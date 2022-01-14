@@ -1,5 +1,7 @@
 from cycle import *
 from os import listdir
+import re
+import pandas as pd
 
 # List of cycles
 cycles = []
@@ -59,137 +61,64 @@ for cycle_file in listdir('data/interviews'):
     curr_cycle = get_cycle(cycle_file.strip(".txt"))
     with open("data/interviews/" + cycle_file) as data:
         for line in data:
-            # School name
-            school = line.split(": ", 1)[0]
-            # List of applicants and their data to that school
-            applicants = []
-
-            # Applicant data for that school
-            data = line.split(": ", 1)[1].strip()
-
-            # Obtain each student individually
-            cont_reading = True
-            while cont_reading:
-                # Obtain the student data
-                split_data = data.split(", ", 2)
-                applicant_data = ", ".join(split_data[0:2])
-                name = applicant_data.split(" ", 1)[0]
-                dates = applicant_data.split(" ", 1)[1]
-                complete = dates[dates.find("C:") + len("C:"):dates.find(", ")].strip()
-                interview = dates[dates.find("II:") + len("II:"):dates.find(")")].strip()
-
-                # Add the data into the cycle
+            school = line.split(":", 1)[0]
+            pattern = "(?P<username>[\w\d ?\-#*]+)[:]{0,1}[ ]*[/(]C:[ ]{0,1}(?P<complete_date>[\w\d/]+)[ ]{0,1}, II:[ ]{0,1}(?P<interview_date>[\w\d/]+)[\)]"
+            user_data_frame = pd.DataFrame(re.findall(pattern, line.split(":", 1)[1]),  columns=('Username', 'Complete', 'Interview'))
+            for index,row in user_data_frame.iterrows():
+                name = row['Username'].strip()
                 if not curr_cycle.get_applicant(name).schools.__contains__(school):
                     curr_cycle.get_applicant(name).schools.append(school)
-                curr_cycle.get_applicant(name).add_complete(school, complete)
-                curr_cycle.get_applicant(name).add_interview_received(school, interview)
-
-                if (len(split_data) > 2):
-                    data = split_data[2]
-                else:
-                    cont_reading = False
+                curr_cycle.get_applicant(name).add_complete(school, row['Complete'])
+                curr_cycle.get_applicant(name).add_interview_received(school, row['Interview'])
 
 # Parse Acceptance Data
 for cycle_file in listdir('data/acceptances'):
     curr_cycle = get_cycle(cycle_file.strip(".txt"))
     with open("data/acceptances/" + cycle_file) as data:
         for line in data:
-            # School name
-            school = line.split(": ", 1)[0]
-            # List of applicants and their data to that school
-            applicants = []
-
-            # Applicant data for that school
-            data = line.split(": ", 1)[1].strip()
-
-            # Obtain each student individually
-            cont_reading = True
-            while cont_reading:
-                # Obtain the student data
-                split_data = data.split(", ", 2)
-                applicant_data = ", ".join(split_data[0:2])
-                name = applicant_data.split(" ", 1)[0]
-                dates = applicant_data.split(" ", 1)[1]
-                interview_date = dates[dates.find("I:") + len("I:"):dates.find(", ")].strip()
-                acceptance = dates[dates.find("A:") + len("A:"):dates.find(")")].strip()
-
-                # Add the data into the cycle
+            school = line.split(":", 1)[0]
+            pattern = "(?P<username>[\w\d ?\-#*]+)[:]{0,1}[ ]*[/(]I:[ ]{0,1}(?P<interview_date>[\w\d/]+)[ ]{0,1}, A:[ ]{0,1}(?P<acceptance_date>[\w\d/]+)[\)]"
+            user_data_frame = pd.DataFrame(re.findall(pattern, line.split(":", 1)[1]),
+                                           columns=('Username', 'Interview', 'Acceptance'))
+            for index, row in user_data_frame.iterrows():
+                name = row['Username'].strip()
                 if not curr_cycle.get_applicant(name).schools.__contains__(school):
                     curr_cycle.get_applicant(name).schools.append(school)
-                curr_cycle.get_applicant(name).add_interview_date(school, interview_date)
-                curr_cycle.get_applicant(name).add_acceptance(school, acceptance)
-                if (len(split_data) > 2):
-                    data = split_data[2]
-                else:
-                    cont_reading = False
+                curr_cycle.get_applicant(name).add_interview_date(school, row['Interview'])
+                curr_cycle.get_applicant(name).add_acceptance(school, row['Acceptance'])
 
 # Parse Pre-Interview Rejection Data
 for cycle_file in listdir('data/pre_int_rejections'):
     curr_cycle = get_cycle(cycle_file.strip(".txt"))
     with open("data/pre_int_rejections/" + cycle_file) as data:
         for line in data:
-            # School name
-            school = line.split(": ", 1)[0]
-            # List of applicants and their data to that school
-            applicants = []
-
-            # Applicant data for that school
-            data = line.split(": ", 1)[1].strip()
-
-            # Obtain each student individually
-            cont_reading = True
-            while cont_reading:
-                # Obtain the student data
-                split_data = data.split(", ", 2)
-                applicant_data = ", ".join(split_data[0:2])
-                name = applicant_data.split(" ", 1)[0]
-                dates = applicant_data.split(" ", 1)[1]
-                complete = dates[dates.find("C:") + len("C:"):dates.find(", ")].strip()
-                rejection = dates[dates.find("R:") + len("R:"):dates.find(")")].strip()
-
-                # Add the data into the cycle
+            school = line.split(":", 1)[0]
+            pattern = "(?P<username>[\w\d ?\-#*]+)[:]{0,1}[ ]*[/(]C:[ ]{0,1}(?P<complete_date>[\w\d/]+)[ ]{0,1}, R:[ ]{0,1}(?P<reject_date>[\w\d/]+)[\)]"
+            user_data_frame = pd.DataFrame(re.findall(pattern, line.split(":", 1)[1]),
+                                           columns=('Username', 'Complete', 'Reject'))
+            for index, row in user_data_frame.iterrows():
+                name = row['Username'].strip()
                 if not curr_cycle.get_applicant(name).schools.__contains__(school):
                     curr_cycle.get_applicant(name).schools.append(school)
-                curr_cycle.get_applicant(name).add_complete(school, complete)
-                curr_cycle.get_applicant(name).add_pre_int_rejection(school, rejection)
-                if (len(split_data) > 2):
-                    data = split_data[2]
-                else:
-                    cont_reading = False
+                curr_cycle.get_applicant(name).add_complete(school, row['Complete'])
+                curr_cycle.get_applicant(name).add_pre_int_rejection(school, row['Reject'])
 
 # Parse Post-Interview Rejection Data
 for cycle_file in listdir('data/post_int_rejections'):
     curr_cycle = get_cycle(cycle_file.strip(".txt"))
     with open("data/post_int_rejections/" + cycle_file) as data:
         for line in data:
-            # School name
-            school = line.split(": ", 1)[0]
-            # List of applicants and their data to that school
-            applicants = []
-
-            # Applicant data for that school
-            data = line.split(": ", 1)[1].strip()
-
-            # Obtain each student individually
-            cont_reading = True
-            while cont_reading:
-                # Obtain the student data
-                split_data = data.split(", ", 2)
-                applicant_data = ", ".join(split_data[0:2])
-                name = applicant_data.split(" ", 1)[0]
-                dates = applicant_data.split(" ", 1)[1]
-                interview = dates[dates.find("I:") + len("I:"):dates.find(", ")].strip()
-                rejection = dates[dates.find("R:") + len("R:"):dates.find(")")].strip()
-
-                # Add the data into the cycle
+            school = line.split(":", 1)[0]
+            pattern = "(?P<username>[\w\d ?\-#*]+)[:]{0,1}[ ]*[/(]I:[ ]{0,1}(?P<complete_date>[\w\d/]+)[ ]{0,1}, R:[ ]{0,1}(?P<reject_date>[\w\d/]+)[\)]"
+            user_data_frame = pd.DataFrame(re.findall(pattern, line.split(":", 1)[1]),
+                                           columns=('Username', 'Interview', 'Reject'))
+            for index, row in user_data_frame.iterrows():
+                name = row['Username'].strip()
                 if not curr_cycle.get_applicant(name).schools.__contains__(school):
                     curr_cycle.get_applicant(name).schools.append(school)
-                curr_cycle.get_applicant(name).add_interview_date(school, interview)
-                curr_cycle.get_applicant(name).add_post_int_rejection(school, rejection)
-                if (len(split_data) > 2):
-                    data = split_data[2]
-                else:
-                    cont_reading = False
+                curr_cycle.get_applicant(name).add_interview_date(school, row['Interview'])
+                curr_cycle.get_applicant(name).add_post_int_rejection(school, row['Reject'])
+
 
 # Print out the raw output without any modification to data
 with open("outputs/raw_output.csv", "w") as file:
