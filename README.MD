@@ -35,32 +35,32 @@ After updating the data, run the parse_data.py file. The data output spreadsheet
 ## Data File Formatting
 Interviews:
 
-`School 1: User_1 (C: [complete date], II: [interview received date]), User_2 (C: [complete date], II: [interview received date]), ...`
-
-`School 2: User_1 (C: [complete date], II: [interview received date]), User_2 (C: [complete date], II: [interview received date]), ...`
-
-`...`
+```
+School 1: User_1 (C: [complete date], II: [interview received date]), User_2 (C: [complete date], II: [interview received date]), ...
+School 2: User_1 (C: [complete date], II: [interview received date]), User_2 (C: [complete date], II: [interview received date]), ...
+...
+```
 
 Acceptances:
 
-`School 1: User_1 (I: [interview date], A: [acceptance received date]), User_2 (I: [interview date], A: [acceptance received date]), ...`
-
-`School 2: User_1 (I: [interview date], A: [acceptance received date]), User_2 (I: [interview date], A: [acceptance received date]), ...`
-
-`...`
+```
+School 1: User_1 (I: [interview date], A: [acceptance received date]), User_2 (I: [interview date], A: [acceptance received date]), ...
+School 2: User_1 (I: [interview date], A: [acceptance received date]), User_2 (I: [interview date], A: [acceptance received date]), ...
+...
+```
 
 Pre-Interview Rejections:
 
-`School 1: User_1 (C: [complete date], R: [rejection received date]), User_2 (C: [complete date], R: [rejection received date]), ...`
-
-`School 2: User_1 (C: [complete date], R: [rejection received date]), User_2 (C: [complete date], R: [rejection received date]), ...`
-
-`...`
+```
+School 1: User_1 (C: [complete date], R: [rejection received date]), User_2 (C: [complete date], R: [rejection received date]), ...
+School 2: User_1 (C: [complete date], R: [rejection received date]), User_2 (C: [complete date], R: [rejection received date]), ...
+...
+```
 
 Post-Interview Rejections:
 
-`School 1: User_1 (I: [interview date], R: [rejection received date]), User_2 (I: [interview date], R: [rejection received date]), ...`
-
-`School 2: User_1 (I: [interview date], R: [rejection received date]), User_2 (I: [interview date], R: [rejection received date]), ...`
-
-`...`
+```
+School 1: User_1 (I: [interview date], R: [rejection received date]), User_2 (I: [interview date], R: [rejection received date]), ...
+School 2: User_1 (I: [interview date], R: [rejection received date]), User_2 (I: [interview date], R: [rejection received date]), ...
+...
+```
